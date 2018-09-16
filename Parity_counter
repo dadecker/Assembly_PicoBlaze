@@ -1,0 +1,65 @@
+DSIN $00
+DSOUT $01
+DSOUT $02
+main_register EQU s0
+parity_counter EQU s1
+even_parity EQU s2
+odd_parity EQU s3
+; store the input in main_register
+IN main_register, 0
+; ; store parity output values in appropriate registers
+LOAD even_parity, 000
+LOAD odd_parity, 001
+;disable interrupts per instructions
+DINT
+; left shift input, will be repeated u ntil all 8 bits are shifted
+SL0 main_register
+; add carry bit to parity_ counter
+ADDC parity_counter, 0
+;the above three commands are repeated 7 more times
+SL0 main_register
+ 3
+ADDC parity_counter, 0
+SL0 main_register
+ADDC p arity_counter, 0
+SL0 main_register
+ADDC parity_counter, 0
+SL0 main_register
+ADDC parity_counter, 0
+SL0 main_register
+ADDC parity_counter, 0
+SL0 main_register
+ADDC parity_counter, 0
+SL0 main_register
+ADDC parity_counter, 0
+;OUT parity_counter, 02
+;after all bits have been right shifted and
+;counted and then added to parity_counter,
+;parity_counter is compared with values
+8 ;8- - 0 and an even or odd result is returned
+;test for the value in parity_counter
+COMP parity_counter, 8
+JUMP Z, even_output
+COMP parity_counter, 7
+JUMP Z, odd_output
+COMP parity_counter, 6
+JUMP Z, even_output
+COMP parity_counter, 5
+JUMP Z, odd_output
+COMP parity_counter, 4
+JUMP Z, even_output
+COMP parity_counter, 3
+JUMP Z, odd_output
+COMP parity_counter, 2
+JUMP Z, even_output
+COMP parity_counter, 1
+JUMP Z, odd_output
+;enable interrupts per instructions
+EINT
+odd_output:
+OUT odd_parity, 01
+JUMP end_program
+even_output:
+OUT even_parity, 01
+ 4
+end_program:
